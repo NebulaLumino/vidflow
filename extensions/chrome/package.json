@@ -1,0 +1,27 @@
+{
+  "name": "@vidflow/chrome-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VidFlow Chrome Extension for video downloading",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "preview": "wxt preview",
+    "lint": "eslint src",
+    "clean": "rm -rf dist .output"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.260",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3",
+    "wxt": "^0.17.0"
+  },
+  "dependencies": {
+    "@vidflow/shared": "workspace:*"
+  }
+}
