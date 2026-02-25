@@ -3,6 +3,9 @@
  * These types are used across all packages, apps, services, and extensions
  */
 
+export * from './adService';
+export * from './analytics';
+
 /**
  * Video platform types supported by VidFlow
  */

@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { VideoMetadata, VideoQuality, VideoFormat } from '@vidflow/shared';
+import { analyticsService } from '@vidflow/shared';
+import { AdBanner } from '../components/AdBanner';
 
 interface ParseResponse {
   video: VideoMetadata;
@@ -34,6 +36,10 @@ export default function Home() {
   const [quality, setQuality] = useState<VideoQuality>('best');
   const [format, setFormat] = useState<VideoFormat>('mp4');
 
+  useEffect(() => {
+    analyticsService.trackEvent('engagement', 'view', 'home_page');
+  }, []);
+
   const detectPlatform = (url: string): string => {
     const urlLower = url.toLowerCase();
     if (urlLower.includes('youtube.com') || urlLower.includes('youtu.be')) return 'youtube';
@@ -55,6 +61,8 @@ export default function Home() {
 
     try {
       const platform = detectPlatform(url);
+      analyticsService.trackSearch(url, platform);
+
       if (platform === 'unknown') {
         setError('Unsupported platform. Please enter a valid video URL.');
         setLoading(false);
@@ -111,6 +119,8 @@ export default function Home() {
             fast, and reliable.
           </p>
         </header>
+
+        <AdBanner placementId="header-banner" />
 
         <div className="search-box">
           <form className="search-form" onSubmit={handleSubmit}>
@@ -220,6 +230,7 @@ export default function Home() {
       </div>
 
       <footer className="footer">
+        <AdBanner placementId="footer-banner" />
         <p>© 2026 VidFlow. Download videos you have the right to access.</p>
       </footer>
     </main>
