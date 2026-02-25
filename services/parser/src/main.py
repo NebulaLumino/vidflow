@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
 
-from shared import VideoMetadata, VideoQuality, VideoFormat, ApiResponse, ParseResponse
+from src.shared import VideoMetadata, VideoQuality, VideoFormat, ApiResponse, ParseResponse, Author
 
 
 # Initialize FastAPI app
@@ -113,17 +113,17 @@ def parse_video_info(ydl_info: dict) -> VideoMetadata:
         platform=get_platform_from_url(ydl_info.get("url", "")),
         title=ydl_info.get("title", ""),
         description=ydl_info.get("description"),
-        thumbnailUrl=ydl_info.get("thumbnail"),
-        author={
-            "name": ydl_info.get("uploader", ydl_info.get("channel", "Unknown")),
-            "url": ydl_info.get("uploader_url", ydl_info.get("channel_url")),
-        },
+        thumbnail_url=ydl_info.get("thumbnail"),
+        author=Author(
+            name=ydl_info.get("uploader", ydl_info.get("channel", "Unknown")),
+            url=ydl_info.get("uploader_url", ydl_info.get("channel_url")),
+        ),
         duration=format_duration(duration),
-        uploadDate=ydl_info.get("upload_date"),
-        viewCount=ydl_info.get("view_count"),
-        likeCount=ydl_info.get("like_count"),
-        availableQualities=sorted(list(available_qualities), key=lambda x: int(x[:-1]) if x != "best" else 9999, reverse=True),
-        availableFormats=sorted(list(available_formats)),
+        upload_date=ydl_info.get("upload_date"),
+        view_count=ydl_info.get("view_count"),
+        like_count=ydl_info.get("like_count"),
+        available_qualities=sorted(list(available_qualities), key=lambda x: int(x[:-1]) if x != "best" else 9999, reverse=True),
+        available_formats=sorted(list(available_formats)),
         url=ydl_info.get("webpage_url", ""),
     )
 

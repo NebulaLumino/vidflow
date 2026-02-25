@@ -8,7 +8,12 @@
     "dev": "wxt",
     "build": "wxt build",
     "preview": "wxt preview",
-    "lint": "eslint src",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "test": "jest",
+    "test:ci": "jest --ci",
     "clean": "rm -rf dist .output"
   },
   "devDependencies": {
@@ -19,7 +24,11 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3",
-    "wxt": "^0.17.0"
+    "wxt": "^0.17.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "ts-jest": "^29.1.2",
+    "jest-environment-jsdom": "^29.7.0"
   },
   "dependencies": {
     "@vidflow/shared": "workspace:*"

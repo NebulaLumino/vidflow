@@ -6,18 +6,21 @@
 /**
  * Video platform types supported by VidFlow
  */
-export type VideoPlatform = 
-  | 'youtube'
-  | 'tiktok'
-  | 'instagram'
-  | 'twitter'
-  | 'facebook'
-  | 'vimeo';
+export type VideoPlatform = 'youtube' | 'tiktok' | 'instagram' | 'twitter' | 'facebook' | 'vimeo';
 
 /**
  * Video quality options
  */
-export type VideoQuality = '144p' | '240p' | '360p' | '480p' | '720p' | '1080p' | '1440p' | '2160p' | 'best';
+export type VideoQuality =
+  | '144p'
+  | '240p'
+  | '360p'
+  | '480p'
+  | '720p'
+  | '1080p'
+  | '1440p'
+  | '2160p'
+  | 'best';
 
 /**
  * Video format options
@@ -91,4 +94,83 @@ export interface ParseRequest {
  */
 export interface ParseResponse {
   video: VideoMetadata;
+}
+
+// Validation functions
+const VALID_PLATFORMS: VideoPlatform[] = [
+  'youtube',
+  'tiktok',
+  'instagram',
+  'twitter',
+  'facebook',
+  'vimeo',
+];
+const VALID_QUALITIES: VideoQuality[] = [
+  '144p',
+  '240p',
+  '360p',
+  '480p',
+  '720p',
+  '1080p',
+  '1440p',
+  '2160p',
+  'best',
+];
+const VALID_FORMATS: VideoFormat[] = ['mp4', 'webm', 'mkv', 'audio'];
+
+/**
+ * Check if a string is a valid VideoPlatform
+ */
+export function isValidVideoPlatform(platform: string): platform is VideoPlatform {
+  return VALID_PLATFORMS.includes(platform as VideoPlatform);
+}
+
+/**
+ * Check if a string is a valid VideoQuality
+ */
+export function isValidVideoQuality(quality: string): quality is VideoQuality {
+  return VALID_QUALITIES.includes(quality as VideoQuality);
+}
+
+/**
+ * Check if a string is a valid VideoFormat
+ */
+export function isValidVideoFormat(format: string): format is VideoFormat {
+  return VALID_FORMATS.includes(format as VideoFormat);
+}
+
+/**
+ * Validate a URL format
+ */
+export function validateUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ['http:', 'https:'].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Create a standardized API response
+ */
+export function createApiResponse<T>(
+  data: T | undefined,
+  errorCode?: string,
+  errorMessage?: string
+): ApiResponse<T> {
+  if (errorCode || errorMessage) {
+    return {
+      success: false,
+      error: {
+        code: errorCode || 'UNKNOWN_ERROR',
+        message: errorMessage || 'An unknown error occurred',
+      },
+    };
+  }
+
+  return {
+    success: true,
+    data,
+  };
 }

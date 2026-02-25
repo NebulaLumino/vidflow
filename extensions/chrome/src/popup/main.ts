@@ -23,6 +23,16 @@ interface VideoInfo {
   duration?: number;
 }
 
+interface VideoData {
+  video?: {
+    url: string;
+    title: string;
+    platform: string;
+    duration?: number;
+    thumbnail?: string;
+  };
+}
+
 // DOM Elements
 const noVideoEl = document.getElementById('noVideo') as HTMLDivElement;
 const videoPanelEl = document.getElementById('videoPanel') as HTMLDivElement;
@@ -73,10 +83,10 @@ function formatDuration(seconds: number): string {
 function showVideoPanel(videoInfo: VideoInfo): void {
   noVideoEl.style.display = 'none';
   videoPanelEl.style.display = 'block';
-  
+
   videoTitleEl.textContent = videoInfo.title;
   platformBadgeEl.textContent = videoInfo.platform.toUpperCase();
-  
+
   if (videoInfo.duration) {
     videoDurationEl.textContent = formatDuration(videoInfo.duration);
   } else {
@@ -103,7 +113,7 @@ function updateStatus(message: string, type: 'info' | 'success' | 'error' = 'inf
 /**
  * Parse video using the backend API
  */
-async function parseVideo(url: string): Promise<any> {
+async function parseVideo(url: string): Promise<VideoInfo | undefined> {
   try {
     const response = await fetch(`${API_BASE}/api/v1/parse`, {
       method: 'POST',
@@ -117,7 +127,7 @@ async function parseVideo(url: string): Promise<any> {
       throw new Error(`API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as VideoData;
     return data.data?.video;
   } catch (error) {
     console.error('Parse error:', error);
@@ -156,7 +166,7 @@ async function downloadVideo(url: string, quality: string): Promise<void> {
 async function init(): Promise<void> {
   try {
     const tab = await getActiveTab();
-    
+
     if (!tab?.url) {
       showNoVideo();
       return;
@@ -179,7 +189,7 @@ async function init(): Promise<void> {
     try {
       // Try to get video info from content script first
       const [response] = await chrome.tabs.sendMessage(tab.id!, { action: 'getVideoInfo' });
-      
+
       if (response && response.url) {
         showVideoPanel({
           url: response.url,
@@ -191,7 +201,7 @@ async function init(): Promise<void> {
       } else {
         // Fall back to API call
         const videoInfo = await parseVideo(url);
-        
+
         if (videoInfo) {
           showVideoPanel({
             url,
@@ -208,7 +218,7 @@ async function init(): Promise<void> {
       // Content script might not be loaded, try API
       try {
         const videoInfo = await parseVideo(url);
-        
+
         if (videoInfo) {
           showVideoPanel({
             url,

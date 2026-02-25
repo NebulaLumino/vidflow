@@ -8,11 +8,7 @@ export default defineConfig({
     name: 'VidFlow',
     short_name: 'VidFlow',
     description: 'Download videos from any website',
-    permissions: [
-      'activeTab',
-      'storage',
-      'tabs',
-    ],
+    permissions: ['activeTab', 'storage', 'tabs'],
     host_permissions: [
       '*://*.youtube.com/*',
       '*://*.tiktok.com/*',
