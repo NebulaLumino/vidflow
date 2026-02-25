@@ -19,7 +19,7 @@ export default defineConfig({
       '*://localhost/*',
     ],
     action: {
-      default_popup: 'popup/index.html',
+      default_popup: 'popup.html',
       default_icon: {
         16: '/icons/icon16.png',
         32: '/icons/icon32.png',
@@ -32,15 +32,6 @@ export default defineConfig({
       32: '/icons/icon32.png',
       48: '/icons/icon48.png',
       128: '/icons/icon128.png',
-    },
-  },
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: undefined,
-        },
-      },
     },
   },
 });
