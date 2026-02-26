@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidFlow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 16px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      width: 24px;
+      height: 24px;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .no-video {
+      text-align: center;
+      padding: 24px 0;
+      color: #888;
+    }
+    .no-video-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    .video-panel {
+      display: none;
+    }
+    .video-info {
+      background: #16213e;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .video-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .platform-badge {
+      background: #e94560;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .video-duration {
+      font-size: 12px;
+      color: #888;
+    }
+    .quality-select {
+      width: 100%;
+      padding: 8px;
+      background: #16213e;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .download-btn {
+      width: 100%;
+      padding: 10px;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover:not(:disabled) {
+      background: #ff6b6b;
+    }
+    .download-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 12px;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      text-align: center;
+    }
+    .status.info {
+      background: #2196f3;
+      color: #fff;
+    }
+    .status.success {
+      background: #4caf50;
+      color: #fff;
+    }
+    .status.error {
+      background: #f44336;
+      color: #fff;
+    }
+    .ad-banner {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #333;
+      text-align: center;
+    }
+    .ad-label {
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .ad-link {
+      display: block;
+      padding: 8px;
+      background: #16213e;
+      border-radius: 4px;
+      color: #888;
+      text-decoration: none;
+      font-size: 11px;
+      transition: background 0.2s;
+    }
+    .ad-link:hover {
+      background: #1e2a4a;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#e94560"/>
+      <path d="M2 17L12 22L22 17" stroke="#e94560" stroke-width="2"/>
+      <path d="M2 12L12 17L22 12" stroke="#e94560" stroke-width="2"/>
+    </svg>
+    <h1>VidFlow</h1>
+  </div>
+
+  <div id="noVideo" class="no-video">
+    <div class="no-video-icon">🎬</div>
+    <p>No video detected on this page</p>
+    <p style="font-size: 11px; color: #666; margin-top: 8px;">Visit YouTube, TikTok, Instagram, or other supported video sites</p>
+  </div>
+
+  <div id="videoPanel" class="video-panel">
+    <div class="video-info">
+      <div id="videoTitle" class="video-title">Loading...</div>
+      <div class="video-meta">
+        <span id="platformBadge" class="platform-badge">youtube</span>
+        <span id="videoDuration" class="video-duration">--:--</span>
+      </div>
+    </div>
+
+    <select id="qualitySelect" class="quality-select">
+      <option value="best">Best Quality</option>
+      <option value="1080p">1080p</option>
+      <option value="720p">720p</option>
+      <option value="480p">480p</option>
+      <option value="360p">360p</option>
+    </select>
+
+    <button id="downloadBtn" class="download-btn">Download Video</button>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <div class="ad-banner">
+    <div class="ad-label">Sponsored</div>
+    <a href="https://vidflow.app" target="_blank" class="ad-link" id="adLink">
+      Try VidFlow Web App - Download videos online
+    </a>
+  </div>
+
+  <script src="./main.ts" type="module"></script>
+</body>
+</html>

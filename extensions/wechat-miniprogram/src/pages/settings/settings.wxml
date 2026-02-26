@@ -1,0 +1,128 @@
+<!--settings.wxml-->
+<view class="container">
+  <!--Settings Sections-->
+  <view class="settings-section">
+    <text class="section-title">General</text>
+    
+    <!--Analytics Toggle-->
+    <view class="setting-item">
+      <view class="setting-info">
+        <text class="setting-label">Analytics</text>
+        <text class="setting-desc">Help us improve by sharing usage data</text>
+      </view>
+      <switch checked="{{analyticsEnabled}}" bindchange="onToggleAnalytics" color="#1A73E8"/>
+    </view>
+
+    <!--Default Quality-->
+    <view class="setting-item" bindtap="onSelectQuality">
+      <view class="setting-info">
+        <text class="setting-label">Default Quality</text>
+        <text class="setting-desc">{{defaultQuality}}</text>
+      </view>
+      <text class="setting-arrow">></text>
+    </view>
+
+    <!--Default Format-->
+    <view class="setting-item" bindtap="onSelectFormat">
+      <view class="setting-info">
+        <text class="setting-label">Default Format</text>
+        <text class="setting-desc">{{defaultFormat}}</text>
+      </view>
+      <text class="setting-arrow">></text>
+    </view>
+  </view>
+
+  <!--API Section-->
+  <view class="settings-section">
+    <text class="section-title">API Configuration</text>
+    
+    <view class="setting-item api-item">
+      <view class="setting-info">
+        <text class="setting-label">API Key</text>
+        <input
+          class="api-input"
+          type="text"
+          placeholder="Enter your API key"
+          value="{{apiKey}}"
+          bindinput="onInputApiKey"
+        />
+      </view>
+      <button class="save-btn" bindtap="onSaveApiKey">Save</button>
+    </view>
+  </view>
+
+  <!--Storage Section-->
+  <view class="settings-section">
+    <text class="section-title">Storage</text>
+    
+    <view class="setting-item" bindtap="onClearCache">
+      <view class="setting-info">
+        <text class="setting-label">Clear Cache</text>
+        <text class="setting-desc">Clear cached data</text>
+      </view>
+    </view>
+
+    <view class="setting-item" bindtap="onClearHistory">
+      <view class="setting-info">
+        <text class="setting-label">Clear History</text>
+        <text class="setting-desc">Delete all download history</text>
+      </view>
+    </view>
+  </view>
+
+  <!--About Section-->
+  <view class="settings-section">
+    <text class="section-title">About</text>
+    
+    <view class="setting-item">
+      <view class="setting-info">
+        <text class="setting-label">Version</text>
+        <text class="setting-desc">{{version}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!--Quality Picker Modal-->
+  <view wx:if="{{showQualityPicker}}" class="modal-mask" bindtap="onQualityCancel">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">Select Quality</text>
+      </view>
+      <picker
+        mode="selector"
+        range="{{qualities}}"
+        value="{{qualities.indexOf(defaultQuality)}}"
+        bindchange="onQualityChange"
+      >
+        <view class="picker-content">
+          <text>{{defaultQuality}}</text>
+        </view>
+      </picker>
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="onQualityCancel">Cancel</button>
+      </view>
+    </view>
+  </view>
+
+  <!--Format Picker Modal-->
+  <view wx:if="{{showFormatPicker}}" class="modal-mask" bindtap="onFormatCancel">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">Select Format</text>
+      </view>
+      <picker
+        mode="selector"
+        range="{{formats}}"
+        value="{{formats.indexOf(defaultFormat)}}"
+        bindchange="onFormatChange"
+      >
+        <view class="picker-content">
+          <text>{{defaultFormat}}</text>
+        </view>
+      </picker>
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="onFormatCancel">Cancel</button>
+      </view>
+    </view>
+  </view>
+</view>

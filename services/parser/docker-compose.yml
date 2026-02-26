@@ -1,0 +1,38 @@
+name: vidflow-parser
+version: 1.0.0
+private: true
+description: Video parser service using FastAPI and yt-dlp
+
+services:
+  parser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/vidflow
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./src:/app/src
+      - downloads:/app/downloads
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vidflow
+
+volumes:
+  downloads:
