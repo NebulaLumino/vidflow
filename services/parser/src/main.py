@@ -4,15 +4,83 @@ FastAPI backend for video parsing using yt-dlp
 """
 import os
 import asyncio
+import hashlib
+import time
 from contextlib import asynccontextmanager
-from typing import Optional
+from typing import Optional, Dict, Any
+from functools import lru_cache
+from collections import OrderedDict
+from threading import Lock
 
 import yt_dlp
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, HttpUrl
 
 from src.shared import VideoMetadata, VideoQuality, VideoFormat, ApiResponse, ParseResponse, Author
+
+
+# Thread-safe LRU cache implementation for parsed videos
+class LRUCache:
+    """Thread-safe LRU cache for parsed video metadata"""
+    
+    def __init__(self, maxsize: int = 100, ttl: int = 3600):
+        self.cache: OrderedDict = OrderedDict()
+        self.timestamps: Dict[str, float] = {}
+        self.maxsize = maxsize
+        self.ttl = ttl  # Time to live in seconds
+        self.lock = Lock()
+    
+    def get(self, key: str) -> Optional[Any]:
+        """Get value from cache if not expired"""
+        with self.lock:
+            if key not in self.cache:
+                return None
+            
+            # Check if expired
+            if time.time() - self.timestamps[key] > self.ttl:
+                del self.cache[key]
+                del self.timestamps[key]
+                return None
+            
+            # Move to end (most recently used)
+            self.cache.move_to_end(key)
+            return self.cache[key]
+    
+    def set(self, key: str, value: Any) -> None:
+        """Set value in cache"""
+        with self.lock:
+            if key in self.cache:
+                self.cache.move_to_end(key)
+            else:
+                if len(self.cache) >= self.maxsize:
+                    # Remove oldest item
+                    oldest_key = next(iter(self.cache))
+                    del self.cache[oldest_key]
+                    del self.timestamps[oldest_key]
+            
+            self.cache[key] = value
+            self.timestamps[key] = time.time()
+    
+    def clear(self) -> None:
+        """Clear all cache entries"""
+        with self.lock:
+            self.cache.clear()
+            self.timestamps.clear()
+    
+    def size(self) -> int:
+        """Get current cache size"""
+        return len(self.cache)
+
+
+# Initialize global cache
+video_cache = LRUCache(maxsize=100, ttl=3600)
+
+
+def generate_cache_key(url: str) -> str:
+    """Generate cache key from URL"""
+    return hashlib.md5(url.encode()).hexdigest()
 
 
 # Initialize FastAPI app
@@ -151,8 +219,15 @@ async def parse_video(request: ParseRequest):
     
     This endpoint extracts video information from the given URL
     including title, duration, available qualities, and formats.
+    Uses LRU cache to avoid re-parsing recently parsed videos.
     """
     url = str(request.url)
+    
+    # Check cache first
+    cache_key = generate_cache_key(url)
+    cached_result = video_cache.get(cache_key)
+    if cached_result:
+        return cached_result
     
     ydl_opts = {
         "quiet": True,
@@ -169,10 +244,15 @@ async def parse_video(request: ParseRequest):
             
             video_metadata = parse_video_info(info)
             
-            return ApiResponse(
+            result = ApiResponse(
                 success=True,
                 data=ParseResponse(video=video_metadata),
             )
+            
+            # Store in cache
+            video_cache.set(cache_key, result)
+            
+            return result
             
     except yt_dlp.utils.DownloadError as e:
         raise HTTPException(status_code=400, detail=f"Download error: {str(e)}")
@@ -234,4 +314,31 @@ async def get_supported_platforms():
             {"id": "facebook", "name": "Facebook", "supported": True},
             {"id": "vimeo", "name": "Vimeo", "supported": True},
         ]
+    }
+
+
+@app.get("/api/v1/cache/stats")
+async def get_cache_stats():
+    """Get cache statistics"""
+    return {
+        "size": video_cache.size(),
+        "maxsize": video_cache.maxsize,
+        "ttl": video_cache.ttl,
+    }
+
+
+@app.post("/api/v1/cache/clear")
+async def clear_cache():
+    """Clear the video metadata cache"""
+    video_cache.clear()
+    return {"message": "Cache cleared successfully"}
+
+
+@app.get("/api/v1/cache/health")
+async def cache_health():
+    """Health check for cache"""
+    return {
+        "status": "healthy",
+        "cache_size": video_cache.size(),
+        "cache_maxsize": video_cache.maxsize,
     }
