@@ -1,4 +1,3 @@
-import React from 'react';
 import type { VideoMetadata } from './types';
 
 interface VideoCardProps {
