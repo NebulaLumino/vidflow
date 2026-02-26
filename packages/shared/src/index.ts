@@ -5,6 +5,7 @@
 
 export * from './adService';
 export * from './analytics';
+export * from './advancedAnalytics';
 
 /**
  * Video platform types supported by VidFlow
