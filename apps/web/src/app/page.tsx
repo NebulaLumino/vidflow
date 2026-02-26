@@ -23,6 +23,10 @@ const PLATFORMS = [
   { id: 'twitter', name: 'Twitter/X' },
   { id: 'facebook', name: 'Facebook' },
   { id: 'vimeo', name: 'Vimeo' },
+  { id: 'twitch', name: 'Twitch' },
+  { id: 'reddit', name: 'Reddit' },
+  { id: 'dailymotion', name: 'Dailymotion' },
+  { id: 'bilibili', name: 'Bilibili' },
 ];
 
 const QUALITIES: VideoQuality[] = ['best', '2160p', '1440p', '1080p', '720p', '480p', '360p'];

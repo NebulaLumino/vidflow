@@ -14,6 +14,10 @@ const PLATFORM_PATTERNS: Record<string, RegExp> = {
   twitter: /twitter\.com|x\.com/,
   facebook: /facebook\.com|fb\.watch/,
   vimeo: /vimeo\.com/,
+  twitch: /twitch\.tv/,
+  reddit: /reddit\.com/,
+  dailymotion: /dailymotion\.com/,
+  bilibili: /bilibili\.com|bili\.2233\.cn/,
 };
 
 interface VideoInfo {
@@ -270,3 +274,17 @@ downloadBtnEl.addEventListener('click', async () => {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', init);
+
+// Ad click tracking
+const adLinkEl = document.getElementById('adLink') as HTMLAnchorElement;
+adLinkEl.addEventListener('click', () => {
+  // Track ad click in localStorage for demo
+  try {
+    const stored = localStorage.getItem('vidflow_analytics');
+    const data = stored ? JSON.parse(stored) : { adClicks: 0 };
+    data.adClicks = (data.adClicks || 0) + 1;
+    localStorage.setItem('vidflow_analytics', JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to track ad click:', e);
+  }
+});

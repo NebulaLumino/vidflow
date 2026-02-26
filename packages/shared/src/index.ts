@@ -9,7 +9,17 @@ export * from './analytics';
 /**
  * Video platform types supported by VidFlow
  */
-export type VideoPlatform = 'youtube' | 'tiktok' | 'instagram' | 'twitter' | 'facebook' | 'vimeo';
+export type VideoPlatform =
+  | 'youtube'
+  | 'tiktok'
+  | 'instagram'
+  | 'twitter'
+  | 'facebook'
+  | 'vimeo'
+  | 'twitch'
+  | 'reddit'
+  | 'dailymotion'
+  | 'bilibili';
 
 /**
  * Video quality options
@@ -107,6 +117,10 @@ const VALID_PLATFORMS: VideoPlatform[] = [
   'twitter',
   'facebook',
   'vimeo',
+  'twitch',
+  'reddit',
+  'dailymotion',
+  'bilibili',
 ];
 const VALID_QUALITIES: VideoQuality[] = [
   '144p',
