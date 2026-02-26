@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidFlow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      padding: 16px;
+      background: #1a1a2e;
+      color: #fff;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .logo {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 6px;
+    }
+    
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .video-info {
+      background: #16213e;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .video-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .video-meta {
+      font-size: 12px;
+      color: #8b8b9a;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .platform-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #667eea;
+      border-radius: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    .quality-select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #16213e;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    
+    .quality-select:focus {
+      outline: 2px solid #667eea;
+    }
+    
+    .download-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    
+    .download-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+    
+    .download-btn:active {
+      transform: translateY(0);
+    }
+    
+    .download-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .status {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 12px;
+      color: #8b8b9a;
+    }
+    
+    .error {
+      color: #ff6b6b;
+    }
+    
+    .success {
+      color: #51cf66;
+    }
+    
+    .no-video {
+      text-align: center;
+      color: #8b8b9a;
+      font-size: 14px;
+      padding: 24px 0;
+    }
+    
+    .footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 10px;
+      color: #4a4a5a;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo"></div>
+    <span class="title">VidFlow</span>
+  </div>
+  
+  <div id="app">
+    <div class="no-video" id="noVideo">
+      <p>No video detected on this page</p>
+      <p style="margin-top: 8px; font-size: 12px;">Navigate to a supported video platform</p>
+    </div>
+    
+    <div id="videoPanel" style="display: none;">
+      <div class="video-info">
+        <div class="video-title" id="videoTitle">Loading...</div>
+        <div class="video-meta">
+          <span class="platform-badge" id="platformBadge">YouTube</span>
+          <span id="videoDuration">--:--</span>
+        </div>
+      </div>
+      
+      <select class="quality-select" id="qualitySelect">
+        <option value="best">Best Quality</option>
+        <option value="2160p">4K (2160p)</option>
+        <option value="1440p">1440p</option>
+        <option value="1080p">1080p</option>
+        <option value="720p">720p</option>
+        <option value="480p">480p</option>
+        <option value="360p">360p</option>
+      </select>
+      
+      <button class="download-btn" id="downloadBtn">Download Video</button>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    VidFlow v1.0.0
+  </div>
+  
+  <script type="module" src="/popup/main.ts"></script>
+</body>
+</html>
