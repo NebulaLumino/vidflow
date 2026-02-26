@@ -1,0 +1,109 @@
+<!--download.wxml-->
+<view class="container">
+  <!--Loading State-->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">Fetching video info...</text>
+  </view>
+
+  <!--Error State-->
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-icon">⚠️</text>
+    <text class="error-text">{{error}}</text>
+    <button class="retry-btn" bindtap="fetchVideoInfo" data-url="{{url}}" data-platform="{{platform}}">
+      Retry
+    </button>
+  </view>
+
+  <!--Video Info-->
+  <view wx:elif="{{videoInfo}}" class="video-info">
+    <!--Thumbnail-->
+    <view class="thumbnail-section">
+      <image class="thumbnail" src="{{videoInfo.thumbnailUrl}}" mode="aspectFill" />
+      <view class="duration-badge">
+        <text>{{videoInfo.duration}}</text>
+      </view>
+      <view class="platform-badge" style="background-color: {{platform === 'youtube' ? '#FF0000' : platform === 'tiktok' ? '#000' : '#1A73E8'}}">
+        <text>{{platform}}</text>
+      </view>
+    </view>
+
+    <!--Title & Author-->
+    <view class="info-section">
+      <text class="video-title">{{videoInfo.title}}</text>
+      <text class="video-author">{{videoInfo.author}}</text>
+      
+      <view wx:if="{{videoInfo.viewCount}}" class="stats-row">
+        <text class="stat-item">{{videoInfo.viewCount}} views</text>
+        <text wx:if="{{videoInfo.likeCount}}" class="stat-item">{{videoInfo.likeCount}} likes</text>
+      </view>
+    </view>
+
+    <!--Download Options (if not downloading)-->
+    <view wx:if="{{!downloading}}" class="options-section">
+      <!--Quality Picker-->
+      <view class="option-item">
+        <text class="option-label">Quality</text>
+        <picker
+          mode="selector"
+          range="{{qualities}}"
+          value="{{qualities.indexOf(selectedQuality)}}"
+          bindchange="onQualityChange"
+        >
+          <view class="option-picker">
+            <text>{{selectedQuality}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+
+      <!--Format Picker-->
+      <view class="option-item">
+        <text class="option-label">Format</text>
+        <picker
+          mode="selector"
+          range="{{formats}}"
+          value="{{0}}"
+          bindchange="onFormatChange"
+        >
+          <view class="option-picker">
+            <text>{{selectedFormat}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+
+      <!--Download Button-->
+      <button class="download-btn" bindtap="onStartDownload">
+        <text class="download-icon">⬇️</text>
+        <text>Download</text>
+      </button>
+    </view>
+
+    <!--Downloading State-->
+    <view wx:else class="downloading-section">
+      <view class="progress-container">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{downloadProgress}}%"></view>
+        </view>
+        <text class="progress-text">{{downloadStatus}}</text>
+      </view>
+
+      <view class="download-actions">
+        <button class="cancel-btn" bindtap="onCancelDownload">
+          Cancel
+        </button>
+      </view>
+    </view>
+
+    <!--Download Complete State-->
+    <view wx:if="{{downloadStatus === 'completed'}}" class="complete-section">
+      <view class="success-icon">✅</view>
+      <text class="success-text">Download Complete!</text>
+      
+      <button class="save-btn" bindtap="onSaveToGallery">
+        Save to Gallery
+      </button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,36 @@
+<!--history.wxml-->
+<view class="container">
+  <!--Header with Clear All-->
+  <view class="header">
+    <text class="title">Download History</text>
+    <text wx:if="{{!empty}}" class="clear-btn" bindtap="onClearAll">Clear All</text>
+  </view>
+
+  <!--Empty State-->
+  <view wx:if="{{empty}}" class="empty-container">
+    <text class="empty-icon">📥</text>
+    <text class="empty-text">No downloads yet</text>
+    <text class="empty-hint">Start by pasting a video URL</text>
+  </view>
+
+  <!--History List-->
+  <view wx:else class="history-list">
+    <view
+      wx:for="{{history}}"
+      wx:key="id"
+      class="history-item"
+    >
+      <view class="item-info">
+        <text class="item-title">{{item.metadata?.title || 'Video'}}</text>
+        <text class="item-platform">{{item.metadata?.platform || item.platform}}</text>
+        <text class="item-date">{{item.savedAt}}</text>
+      </view>
+      <view class="item-status {{item.status}}">
+        <text>{{item.status}}</text>
+      </view>
+      <view class="item-actions">
+        <text class="delete-btn" data-index="{{index}}" bindtap="onDeleteItem">🗑️</text>
+      </view>
+    </view>
+  </view>
+</view>

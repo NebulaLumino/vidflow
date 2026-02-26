@@ -1,0 +1,277 @@
+/*download.wxss*/
+.container {
+  min-height: 100vh;
+  background-color: #f8f8f8;
+}
+
+/*Loading State*/
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #e8f0fe;
+  border-top-color: #1A73E8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  margin-top: 24rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/*Error State*/
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 32rpx;
+}
+
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #666;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.retry-btn {
+  background-color: #1A73E8;
+  color: #fff;
+  border-radius: 8rpx;
+  padding: 16rpx 48rpx;
+}
+
+/*Video Info*/
+.video-info {
+  padding: 32rpx;
+}
+
+.thumbnail-section {
+  position: relative;
+  width: 100%;
+  height: 400rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+}
+
+.duration-badge {
+  position: absolute;
+  bottom: 16rpx;
+  right: 16rpx;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+}
+
+.platform-badge {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  background-color: #1A73E8;
+  color: #fff;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  text-transform: capitalize;
+}
+
+/*Info Section*/
+.info-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.video-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.video-author {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.stats-row {
+  display: flex;
+  gap: 24rpx;
+}
+
+.stat-item {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/*Options Section*/
+.options-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.option-item:last-child {
+  border-bottom: none;
+}
+
+.option-label {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.option-picker {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+  color: #1A73E8;
+}
+
+.picker-arrow {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  width: 100%;
+  height: 88rpx;
+  background-color: #1A73E8;
+  color: #fff;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-top: 24rpx;
+  border: none;
+}
+
+.download-icon {
+  font-size: 32rpx;
+}
+
+/*Downloading Section*/
+.downloading-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.progress-container {
+  margin-bottom: 24rpx;
+}
+
+.progress-bar {
+  height: 12rpx;
+  background-color: #e8f0fe;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #1A73E8;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  display: block;
+  text-align: center;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 12rpx;
+}
+
+.download-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.cancel-btn {
+  flex: 1;
+  height: 80rpx;
+  background-color: #f5f5f5;
+  color: #666;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+/*Complete Section*/
+.complete-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 48rpx;
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.success-text {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #34a853;
+  margin-bottom: 32rpx;
+}
+
+.save-btn {
+  width: 100%;
+  height: 88rpx;
+  background-color: #34a853;
+  color: #fff;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+}
