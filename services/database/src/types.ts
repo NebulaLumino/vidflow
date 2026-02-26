@@ -2,10 +2,10 @@ export interface DownloadRecord {
   id: string;
   url: string;
   platform: string;
-  title: string;
+  title?: string;
   quality: string;
   format: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed';
   file_path?: string;
   error_message?: string;
   created_at: string;

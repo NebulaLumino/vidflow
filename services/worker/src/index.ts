@@ -7,6 +7,7 @@ import { VideoDownloadWorker } from './workers/VideoDownloadWorker';
 import { VideoConversionWorker } from './workers/VideoConversionWorker';
 import { NotificationWorker, CleanupWorker } from './workers/NotificationWorker';
 import { Job, JobStatus, JobType, WorkerConfig } from './types';
+import { createDatabase, DatabaseService } from '@vidflow/database';
 
 dotenv.config();
 
@@ -28,8 +29,19 @@ const config: WorkerConfig = {
   port: parseInt(process.env.PORT || '3001'),
 };
 
+// Database configuration
+const dbConfig = {
+  path: process.env.DB_PATH || './data/downloads.json',
+};
+
+let db: DatabaseService;
+
 async function main() {
   console.log('[Worker] Starting VidFlow Worker Service...');
+
+  // Initialize database
+  db = createDatabase(dbConfig);
+  console.log('[Worker] Database initialized');
 
   const queueManager = new QueueManager(config.queue);
   await queueManager.connect();
@@ -60,7 +72,7 @@ async function main() {
   // API to submit jobs
   app.post('/api/v1/jobs', async (req: Request, res: Response) => {
     try {
-      const { type, payload } = req.body;
+      const { type, payload, url, quality, format, platform } = req.body;
 
       if (!type) {
         res.status(400).json({ error: 'Job type is required' });
@@ -78,6 +90,17 @@ async function main() {
         maxRetries: config.maxRetries,
       };
 
+      // Create download record in database
+      if (url) {
+        db.createDownload({
+          url,
+          platform: platform || 'unknown',
+          quality: quality || 'best',
+          format: format || 'mp4',
+          status: 'pending',
+        });
+      }
+
       await queueManager.publishJob(job);
 
       res.status(202).json({
@@ -93,8 +116,31 @@ async function main() {
 
   // API to get job status
   app.get('/api/v1/jobs/:id', async (req: Request, res: Response) => {
-    // In a real implementation, we'd fetch from Redis/database
-    res.status(501).json({ error: 'Job status tracking not implemented' });
+    try {
+      const { id } = req.params;
+      const download = db.getDownload(id);
+
+      if (!download) {
+        res.status(404).json({ error: 'Job not found' });
+        return;
+      }
+
+      res.json(download);
+    } catch (error) {
+      console.error('[Worker] Error getting job status:', error);
+      res.status(500).json({ error: 'Failed to get job status' });
+    }
+  });
+
+  // API to get download statistics
+  app.get('/api/v1/stats', async (req: Request, res: Response) => {
+    try {
+      const stats = db.getStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('[Worker] Error getting stats:', error);
+      res.status(500).json({ error: 'Failed to get stats' });
+    }
   });
 
   app.listen(config.port, () => {
