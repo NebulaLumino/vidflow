@@ -1,12 +1,33 @@
 version: '3.8'
 
 services:
+  # API Gateway (Go)
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      - PARSER_URL=http://parser:8000
+      - WORKER_URL=http://worker:3001
+      - AD_SERVICE_URL=http://ad-service:8082
+      - LOG_LEVEL=info
+      - RATE_LIMIT_REQUESTS=100
+      - RATE_LIMIT_WINDOW=60s
+      - REQUEST_TIMEOUT=30s
+    depends_on:
+      - parser
+      - worker
+      - ad-service
+
+  # Parser Service (Python/FastAPI)
   parser:
     build:
       context: ./services/parser
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - '8000:8000'
     environment:
       - REDIS_URL=redis://redis:6379
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/vidflow
@@ -19,29 +40,85 @@ services:
       - ./services/parser/src:/app/src
       - downloads:/app/downloads
 
+  # Worker Service (Node.js/TypeScript)
+  worker:
+    build:
+      context: ./services/worker
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_VHOST=/
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PARSER_URL=http://parser:8000
+      - MAX_RETRIES=3
+      - CONCURRENCY=10
+      - PORT=3001
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Ad Service (Go)
+  ad-service:
+    build:
+      context: ./services/ad-service
+      dockerfile: Dockerfile
+    ports:
+      - '8082:8082'
+    environment:
+      - PORT=8082
+      - DB_PATH=/app/ad_service.db
+    volumes:
+      - ad-data:/app
+
+  # Redis Cache
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5
 
+  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=vidflow
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 3s
       retries: 5
 
+  # RabbitMQ Message Queue
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'check_running']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   downloads:
+  ad-data:

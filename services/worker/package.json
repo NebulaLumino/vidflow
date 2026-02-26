@@ -10,6 +10,26 @@
     "test": "jest",
     "lint": "eslint src/**/*.ts"
   },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/__tests__/**"
+    ]
+  },
   "dependencies": {
     "amqplib": "^0.10.3",
     "dotenv": "^16.3.1",

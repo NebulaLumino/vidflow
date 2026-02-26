@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import type { VideoMetadata, VideoQuality, VideoFormat } from '@vidflow/shared';
 import { analyticsService } from '@vidflow/shared';
 import { AdBanner } from '../components/AdBanner';
+import { URLInput } from '@vidflow/ui';
+import { VideoCard } from '@vidflow/ui';
+import { DownloadCard } from '@vidflow/ui';
 
 interface ParseResponse {
   video: VideoMetadata;
@@ -127,19 +130,13 @@ export default function Home() {
         <AdBanner placementId="header-banner" />
 
         <div className="search-box">
-          <form className="search-form" onSubmit={handleSubmit}>
-            <input
-              type="url"
-              className="search-input"
-              placeholder="Paste video URL here..."
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-            />
-            <button type="submit" className="search-button" disabled={loading}>
-              {loading ? 'Parsing...' : 'Download'}
-            </button>
-          </form>
+          <URLInput
+            value={url}
+            onChange={setUrl}
+            onSubmit={handleSubmit}
+            loading={loading}
+            placeholder="Paste video URL here..."
+          />
         </div>
 
         <div className="supported-platforms">
@@ -170,65 +167,15 @@ export default function Home() {
 
         {video && !loading && (
           <div className="result-panel">
-            <div className="video-info">
-              {video.thumbnail_url && (
-                <img src={video.thumbnail_url} alt={video.title} className="video-thumbnail" />
-              )}
-              <div className="video-details">
-                <h3 className="video-title">{video.title}</h3>
-                <div className="video-meta">
-                  <span className={`video-platform ${video.platform}`}>{video.platform}</span>
-                  {video.duration && (
-                    <span>
-                      {Math.floor(video.duration / 60)}:
-                      {String(video.duration % 60).padStart(2, '0')}
-                    </span>
-                  )}
-                  {video.author && <span>by {video.author.name}</span>}
-                </div>
-                {video.description && (
-                  <p style={{ fontSize: '0.9rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                    {video.description.substring(0, 150)}
-                    {video.description.length > 150 ? '...' : ''}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="download-options">
-              <h4>Download Options</h4>
-              <div className="option-row">
-                <span className="option-label">Quality</span>
-                <select
-                  className="option-select"
-                  value={quality}
-                  onChange={(e) => setQuality(e.target.value as VideoQuality)}
-                >
-                  {QUALITIES.map((q) => (
-                    <option key={q} value={q}>
-                      {q === 'best' ? 'Best Quality' : q}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="option-row">
-                <span className="option-label">Format</span>
-                <select
-                  className="option-select"
-                  value={format}
-                  onChange={(e) => setFormat(e.target.value as VideoFormat)}
-                >
-                  {FORMATS.map((f) => (
-                    <option key={f} value={f}>
-                      {f.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button className="download-button" onClick={handleDownload}>
-                Download Now
-              </button>
-            </div>
+            <VideoCard video={video} onSelect={() => {}} />
+            <DownloadCard
+              video={video}
+              quality={quality}
+              format={format}
+              onQualityChange={setQuality}
+              onFormatChange={setFormat}
+              onDownload={handleDownload}
+            />
           </div>
         )}
       </div>
