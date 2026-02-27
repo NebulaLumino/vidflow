@@ -1,0 +1,94 @@
+<!--index.wxml-->
+<view class="container">
+  <!--Header-->
+  <view class="header">
+    <text class="title">VidFlow</text>
+    <text class="subtitle">Download videos from any platform</text>
+  </view>
+
+  <!--URL Input Section-->
+  <view class="input-section">
+    <view class="input-wrapper">
+      <input
+        class="url-input"
+        type="text"
+        placeholder="Paste video URL here..."
+        value="{{url}}"
+        bindinput="onInputUrl"
+        confirm-type="search"
+        bindconfirm="onFetchInfo"
+      />
+      <view class="input-actions">
+        <view class="paste-btn" bindtap="onPaste">
+          <text class="paste-icon">📋</text>
+        </view>
+        <view class="quality-btn" bindtap="onSelectQuality">
+          <text class="quality-label">{{selectedQuality}}</text>
+        </view>
+      </view>
+    </view>
+
+    <button
+      class="fetch-btn"
+      loading="{{loading}}"
+      bindtap="onFetchInfo"
+      disabled="{{loading}}"
+    >
+      {{loading ? 'Fetching...' : 'Get Video Info'}}
+    </button>
+  </view>
+
+  <!--Supported Platforms-->
+  <view class="platforms-section">
+    <text class="section-title">Supported Platforms</text>
+    <view class="platforms-grid">
+      <view
+        wx:for="{{supportedPlatforms}}"
+        wx:key="key"
+        class="platform-item"
+        data-platform="{{item.key}}"
+        bindtap="onSelectPlatform"
+      >
+        <view class="platform-icon {{item.icon}}"></view>
+        <text class="platform-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!--Recent Platforms-->
+  <view wx:if="{{recentPlatforms.length > 0}}" class="recent-section">
+    <text class="section-title">Recent</text>
+    <view class="recent-list">
+      <view
+        wx:for="{{recentPlatforms}}"
+        wx:key="*this"
+        class="recent-item"
+      >
+        <text class="recent-name">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!--Quality Picker Modal-->
+  <view wx:if="{{showQualityPicker}}" class="modal-mask" bindtap="onQualityCancel">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">Select Quality</text>
+      </view>
+      <picker
+        mode="selector"
+        range="{{qualities}}"
+        value="{{qualities.indexOf(selectedQuality)}}"
+        bindchange="onQualityChange"
+      >
+        <view class="picker-content">
+          <text>{{selectedQuality}}</text>
+        </view>
+      </picker>
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="onQualityCancel">Cancel</button>
+        <button class="modal-btn confirm" bindtap="onQualityConfirm">Confirm</button>
+      </view>
+    </view>
+  </view>
+</view>

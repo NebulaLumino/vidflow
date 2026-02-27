@@ -1,0 +1,140 @@
+/*settings.wxss*/
+.container {
+  min-height: 100vh;
+  background-color: #f8f8f8;
+  padding: 32rpx;
+}
+
+/*Settings Section*/
+.settings-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+}
+
+.section-title {
+  display: block;
+  padding: 24rpx 24rpx 16rpx;
+  font-size: 24rpx;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/*Setting Item*/
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-info {
+  flex: 1;
+}
+
+.setting-label {
+  display: block;
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.setting-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.setting-arrow {
+  font-size: 28rpx;
+  color: #ccc;
+  margin-left: 16rpx;
+}
+
+/*API Item*/
+.api-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.api-input {
+  width: 100%;
+  padding: 16rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.save-btn {
+  background-color: #1A73E8;
+  color: #fff;
+  border-radius: 8rpx;
+  padding: 12rpx 32rpx;
+  font-size: 26rpx;
+  border: none;
+}
+
+/*Modal*/
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 600rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+.modal-header {
+  margin-bottom: 24rpx;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.picker-content {
+  padding: 24rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.modal-btn.cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
