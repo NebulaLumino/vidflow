@@ -179,11 +179,11 @@ export async function download(options: DownloadOptions): Promise<DownloadResult
       throw new Error(`Download failed: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { metadata?: VideoMetadata; filePath?: string };
 
     result.status = 'completed';
     result.metadata = data.metadata;
-    result.filePath = data.filePath;
+    result.filePath = data.filePath || '';
     result.completedAt = Date.now();
 
     // Emit completed event
@@ -281,7 +281,7 @@ export async function getDownloadHistory(): Promise<DownloadResult[]> {
     throw new Error('Failed to fetch download history');
   }
 
-  return response.json();
+  return response.json() as Promise<DownloadResult[]>;
 }
 
 /** Configure module */
@@ -332,7 +332,7 @@ export async function getAnalyticsReport(
     throw new Error('Failed to fetch analytics report');
   }
 
-  return response.json();
+  return response.json() as Promise<AnalyticsReport>;
 }
 
 /** Track custom event */
@@ -423,16 +423,4 @@ export default {
 };
 
 // Named exports for testing
-export {
-  generateUUID,
-  detectPlatform,
-  clearDownloads,
-  addEventListener,
-  trackEvent,
-  configure,
-  getConfig,
-  getSessionId,
-  startNewSession,
-  setUserId,
-  getUserId,
-};
+export { generateUUID };
