@@ -67,7 +67,7 @@ async function sendAnalyticsEvent(event: AnalyticsEvent): Promise<void> {
   }
 }
 
-/** Get platform from URL */
+export /** Get platform from URL **/
 function detectPlatform(url: string): VideoPlatform | null {
   const urlLower = url.toLowerCase();
 
