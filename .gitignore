@@ -53,3 +53,19 @@ downloads/
 *.mkv
 *.mp3
 *.m4a
+
+# TypeScript
+*.tsbuildinfo
+
+# WXT (Chrome extension)
+extensions/chrome/.output/
+extensions/chrome/.wxt/
+
+# Python
+__pycache__/
+*.pyc
+
+
+# Coverage
+.coverage
+
