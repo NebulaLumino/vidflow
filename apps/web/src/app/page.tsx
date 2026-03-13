@@ -1,9 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { VideoMetadata, VideoQuality, VideoFormat } from '@vidflow/shared';
+import type { VideoQuality, VideoFormat } from '@vidflow/shared';
+import type { VideoMetadata } from '@vidflow/ui';
 import { analyticsService } from '@vidflow/shared';
 import { AdBanner } from '../components/AdBanner';
+import { DownloadHistory } from '../components/DownloadHistory';
+import { URLInput } from '@vidflow/ui';
+import { VideoCard } from '@vidflow/ui';
+import { DownloadCard } from '@vidflow/ui';
+
+// Python API response format (from parser service)
+interface PythonVideoMetadata {
+  id: string;
+  platform: string;
+  title: string;
+  description?: string;
+  thumbnail_url?: string;
+  author?: { name: string; url?: string };
+  duration?: number;
+  upload_date?: string;
+  view_count?: number;
+  like_count?: number;
+  available_qualities: string[];
+  available_formats: string[];
+  url: string;
+}
+
+interface PythonParseResponse {
+  video: PythonVideoMetadata;
+}
 
 interface ParseResponse {
   video: VideoMetadata;
@@ -15,6 +41,28 @@ interface ApiResponse<T> {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_PARSER_URL || 'http://localhost:8000';
+
+// Transform Python API response to TypeScript VideoMetadata
+function transformVideoMetadata(pythonVideo: PythonVideoMetadata): VideoMetadata {
+  // Convert available_qualities to VideoQuality[] format (using UI package format)
+  const qualities = pythonVideo.available_qualities.map((q) => ({
+    resolution: q,
+    format: pythonVideo.available_formats[0] || 'mp4',
+    url: pythonVideo.url,
+  }));
+
+  return {
+    id: pythonVideo.id,
+    title: pythonVideo.title,
+    description: pythonVideo.description,
+    thumbnail: pythonVideo.thumbnail_url || '',
+    duration: pythonVideo.duration || 0,
+    platform: pythonVideo.platform,
+    author: pythonVideo.author?.name || '',
+    publishedAt: pythonVideo.upload_date,
+    qualities,
+  };
+}
 
 const PLATFORMS = [
   { id: 'youtube', name: 'YouTube' },
@@ -55,17 +103,16 @@ export default function Home() {
     return 'unknown';
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url.trim()) return;
+  const handleStringSubmit = async (urlString: string) => {
+    if (!urlString.trim()) return;
 
     setLoading(true);
     setError('');
     setVideo(null);
 
     try {
-      const platform = detectPlatform(url);
-      analyticsService.trackSearch(url, platform);
+      const platform = detectPlatform(urlString);
+      analyticsService.trackSearch(urlString, platform);
 
       if (platform === 'unknown') {
         setError('Unsupported platform. Please enter a valid video URL.');
@@ -76,7 +123,7 @@ export default function Home() {
       const response = await fetch(`${API_BASE}/api/v1/parse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: urlString }),
       });
 
       if (!response.ok) {
@@ -84,13 +131,19 @@ export default function Home() {
         throw new Error(errorData.detail || 'Failed to parse video');
       }
 
-      const data: ApiResponse<ParseResponse> = await response.json();
-      setVideo(data.data.video);
+      const data: ApiResponse<PythonParseResponse> = await response.json();
+      const transformedVideo = transformVideoMetadata(data.data.video);
+      setVideo(transformedVideo);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse video');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleStringSubmit(url);
   };
 
   const handleDownload = async () => {
@@ -127,20 +180,14 @@ export default function Home() {
         <AdBanner placementId="header-banner" />
 
         <div className="search-box">
-          <form className="search-form" onSubmit={handleSubmit}>
-            <input
-              type="url"
-              className="search-input"
-              placeholder="Paste video URL here..."
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-            />
-            <button type="submit" className="search-button" disabled={loading}>
-              {loading ? 'Parsing...' : 'Download'}
-            </button>
-          </form>
+          <URLInput
+            onSubmit={handleStringSubmit}
+            loading={loading}
+            placeholder="Paste video URL here..."
+          />
         </div>
+
+        <DownloadHistory />
 
         <div className="supported-platforms">
           <h3>Supported Platforms</h3>
@@ -170,65 +217,8 @@ export default function Home() {
 
         {video && !loading && (
           <div className="result-panel">
-            <div className="video-info">
-              {video.thumbnail_url && (
-                <img src={video.thumbnail_url} alt={video.title} className="video-thumbnail" />
-              )}
-              <div className="video-details">
-                <h3 className="video-title">{video.title}</h3>
-                <div className="video-meta">
-                  <span className={`video-platform ${video.platform}`}>{video.platform}</span>
-                  {video.duration && (
-                    <span>
-                      {Math.floor(video.duration / 60)}:
-                      {String(video.duration % 60).padStart(2, '0')}
-                    </span>
-                  )}
-                  {video.author && <span>by {video.author.name}</span>}
-                </div>
-                {video.description && (
-                  <p style={{ fontSize: '0.9rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                    {video.description.substring(0, 150)}
-                    {video.description.length > 150 ? '...' : ''}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="download-options">
-              <h4>Download Options</h4>
-              <div className="option-row">
-                <span className="option-label">Quality</span>
-                <select
-                  className="option-select"
-                  value={quality}
-                  onChange={(e) => setQuality(e.target.value as VideoQuality)}
-                >
-                  {QUALITIES.map((q) => (
-                    <option key={q} value={q}>
-                      {q === 'best' ? 'Best Quality' : q}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="option-row">
-                <span className="option-label">Format</span>
-                <select
-                  className="option-select"
-                  value={format}
-                  onChange={(e) => setFormat(e.target.value as VideoFormat)}
-                >
-                  {FORMATS.map((f) => (
-                    <option key={f} value={f}>
-                      {f.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button className="download-button" onClick={handleDownload}>
-                Download Now
-              </button>
-            </div>
+            <VideoCard video={video} onClick={() => {}} />
+            <DownloadCard video={video} onDownload={handleDownload} />
           </div>
         )}
       </div>

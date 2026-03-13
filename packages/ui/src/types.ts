@@ -15,6 +15,7 @@ export interface VideoMetadata {
   author?: string;
   publishedAt?: string;
   qualities: VideoQuality[];
+  url?: string;
 }
 
 export interface DownloadOptions {

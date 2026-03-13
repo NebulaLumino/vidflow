@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import type { VideoMetadata, DownloadProgress } from './types';
 
 interface DownloadCardProps {
@@ -18,10 +18,10 @@ export function DownloadCard({
   disabled = false,
   className = '',
 }: DownloadCardProps) {
-  const [selectedQuality, setSelectedQuality] = React.useState<string>('');
-  const [selectedFormat, setSelectedFormat] = React.useState<string>('mp4');
+  const [selectedQuality, setSelectedQuality] = useState<string>('');
+  const [selectedFormat, setSelectedFormat] = useState<string>('mp4');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (video.qualities && video.qualities.length > 0 && !selectedQuality) {
       setSelectedQuality(video.qualities[0].resolution);
     }
