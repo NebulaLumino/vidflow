@@ -1,9 +1,0 @@
-{
-  "preset": "ts-jest",
-  "testEnvironment": "node",
-  "rootDir": "src",
-  "testMatch": ["**/__tests__/**/*.ts", "**/*.test.ts", "**/*.spec.ts"],
-  "transform": {
-    "^.+\\.ts$": ["ts-jest", { "tsconfig": { "module": "commonjs", "esModuleInterop": true } }]
-  }
-}
